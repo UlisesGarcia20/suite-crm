@@ -57,6 +57,11 @@ RUN mkdir -p \
     && chgrp -R 0 /var/www/html /var/log/apache2 /var/run/apache2 /etc/apache2 \
     && chmod -R g=u /var/www/html /var/log/apache2 /var/run/apache2 /etc/apache2
 
+# Create .env file with basic configuration
+RUN printf 'APP_ENV=production\nAPP_DEBUG=0\nAPP_SECRET=SuiteCRMSecretKey2026\nDATABASE_URL=mysql://farodevops:4dm1nf4ro159@mariadb:3306/suitecrm?serverVersion=11.0&charset=utf8mb4\nMAILER_DSN=null://null\nTZ=America/Mexico_City\n' > /var/www/html/.env && \
+    chown www-data:www-data /var/www/html/.env && \
+    chmod 644 /var/www/html/.env
+
 EXPOSE 8080
 
 ENTRYPOINT ["apache2-foreground"]
