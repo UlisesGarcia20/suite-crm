@@ -37,10 +37,16 @@ RUN a2enmod rewrite headers expires && \
 
 COPY --chown=www-data:www-data . /var/www/html/
 
+# Create required directories for composer and application
+RUN mkdir -p \
+    /var/www/html/public/legacy/Api \
+    /var/www/html/public/legacy/cache \
+    /var/www/html/public/legacy/upload
+
 # Install Composer and PHP dependencies
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     cd /var/www/html && \
-    composer install --no-dev --optimize-autoloader 2>&1 | head -50
+    composer install --no-dev --optimize-autoloader
 
 RUN mkdir -p \
     /var/www/html/cache \
