@@ -46,7 +46,7 @@ RUN mkdir -p \
 # Install Composer and PHP dependencies
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     cd /var/www/html && \
-    composer install --no-dev --optimize-autoloader
+    composer install --no-dev --optimize-autoloader --no-scripts
 
 RUN mkdir -p \
     /var/www/html/cache \
