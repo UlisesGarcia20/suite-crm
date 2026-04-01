@@ -1,9 +1,41 @@
-FROM php:8.1-apache-bullseye
-RUN apt-get update && apt-get install -y     libfreetype6-dev     libjpeg62-turbo-dev     libpng-dev     libwebp-dev     libzip-dev     libicu-dev     libxml2-dev     libonig-dev     libcurl4-openssl-dev     libc-client-dev     libkrb5-dev     zlib1g-dev     unzip     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp     && docker-php-ext-configure imap --with-kerberos --with-imap-ssl     && docker-php-ext-install -j$(nproc)         gd intl mbstring mysqli pdo_mysql xml zip curl imap opcache bcmath soap     && apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN {     echo 'memory_limit = 512M';     echo 'upload_max_filesize = 100M';     echo 'post_max_size = 100M';     echo 'max_execution_time = 300';     echo 'date.timezone = America/Mexico_City'; } > /usr/local/etc/php/conf.d/suitecrm.ini
-RUN a2enmod rewrite headers expires &&     sed -i 's/Listen 80/Listen 8080/' /etc/apache2/ports.conf &&     printf '<VirtualHost *:8080>\n    DocumentRoot /var/www/html/public\n    <Directory /var/www/html/public>\n        Options -Indexes +FollowSymLinks\n        AllowOverride All\n        Require all granted\n    </Directory>\n    ErrorLog /dev/stderr\n    CustomLog /dev/stdout combined\n</VirtualHost>\n'     > /etc/apache2/sites-enabled/000-default.conf
-COPY --chown=www-data:www-data . /var/www/html/
-RUN mkdir -p         /var/www/html/cache         /var/www/html/logs         /var/www/html/upload         /var/www/html/public/legacy/cache         /var/www/html/public/legacy/upload     && chgrp -R 0 /var/www/html /var/log/apache2 /var/run/apache2 /etc/apache2     && chmod -R g=u /var/www/html /var/log/apache2 /var/run/apache2 /etc/apache2
-EXPOSE 8080
-ENV "OPENSHIFT_BUILD_NAME"="suitecrm-2" "OPENSHIFT_BUILD_NAMESPACE"="suite-crm"
-LABEL "io.openshift.build.name"="suitecrm-2" "io.openshift.build.namespace"="suite-crm"
+FROM php:8.3-apache
+
+RUN apt-get update \
+    && apt-get install -y \
+        unzip \
+        busybox-static
+    #     # cron
+    #     busybox-static \
+    # && mkdir -p /var/spool/cron/crontabs \
+    # && echo '* * * * * cd /var/www/html; php -f cron.php > /dev/null 2>&1' > /var/spool/cron/crontabs/www-data
+
+# Install PHP extensions
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+RUN chmod uga+x /usr/local/bin/install-php-extensions && sync \
+    && install-php-extensions \
+    apcu \
+    gd \
+    imap \
+    intl \
+    ldap \
+    mysqli \
+    pdo_mysql \
+    soap \
+    xdebug \
+    zip
+
+COPY config/php.ini /usr/local/etc/php/conf.d/
+
+# COPY config/crontab /etc/cron.d/app-cron
+# RUN chmod 0644 /etc/cron.d/app-cron
+# RUN crond -c /etc/cron.d
+
+RUN a2enmod rewrite
+COPY config/apache/httpd.conf /etc/apache2/sites-enabled/000-default.conf
+
+COPY config/php.ini /usr/local/etc/php/conf.d/
+COPY scripts/entrypoint.sh /var/www/scripts/
+
+WORKDIR /var/www/html
+
+ENTRYPOINT ["bash", "/var/www/scripts/entrypoint.sh"]
