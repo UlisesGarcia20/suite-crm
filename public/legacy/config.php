@@ -123,7 +123,7 @@ $sugar_config = array (
   'datef' => 'm/d/Y',
   'dbconfig' =>
   array (
-    'db_host_name' => 'mariadb',
+    'db_host_name' => 'mariadb-nuevo',
     'db_host_instance' => '',
     'db_user_name' => 'farodevops',
     'db_password' => '4dm1nf4ro159',
