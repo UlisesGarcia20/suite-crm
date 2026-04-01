@@ -121,12 +121,12 @@ $sugar_config = array (
     'm.d.Y' => '12.23.2010',
   ),
   'datef' => 'm/d/Y',
-  'dbconfig' => 
+  'dbconfig' =>
   array (
     'db_host_name' => 'mariadb',
     'db_host_instance' => '',
-    'db_user_name' => 'suitecrm',
-    'db_password' => 'SuiteCRM2024!',
+    'db_user_name' => 'farodevops',
+    'db_password' => '4dm1nf4ro159',
     'db_name' => 'suitecrm',
     'db_type' => 'mysql',
     'db_port' => '3306',
