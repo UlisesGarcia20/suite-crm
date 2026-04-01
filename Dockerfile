@@ -32,7 +32,7 @@ RUN { \
 
 RUN a2enmod rewrite headers expires && \
     sed -i 's/Listen 80/Listen 8080/' /etc/apache2/ports.conf && \
-    printf '<VirtualHost *:8080>\n    DocumentRoot /var/www/html/public\n    <Directory /var/www/html/public>\n        Options -Indexes +FollowSymLinks\n        AllowOverride All\n        Require all granted\n    </Directory>\n    ErrorLog /dev/stderr\n    CustomLog /dev/stdout combined\n</VirtualHost>\n' \
+    printf '<VirtualHost *:8080>\n    DocumentRoot /var/www/html\n    <Directory /var/www/html>\n        Options -Indexes +FollowSymLinks\n        AllowOverride All\n        Require all granted\n    </Directory>\n    <Directory /var/www/html/public>\n        Options -Indexes +FollowSymLinks\n        AllowOverride All\n        Require all granted\n    </Directory>\n    ErrorLog /dev/stderr\n    CustomLog /dev/stdout combined\n</VirtualHost>\n' \
     > /etc/apache2/sites-enabled/000-default.conf
 
 COPY --chown=www-data:www-data . /var/www/html/
