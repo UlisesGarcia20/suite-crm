@@ -14,10 +14,12 @@ RUN apt-get update && apt-get install -y \
     libkrb5-dev \
     zlib1g-dev \
     unzip \
+    libldap2-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
+    && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu \
     && docker-php-ext-install -j$(nproc) \
-    gd intl mbstring mysqli pdo_mysql xml zip curl imap opcache bcmath soap \
+    gd intl mbstring mysqli pdo_mysql xml zip curl imap opcache bcmath soap ldap \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN { \
