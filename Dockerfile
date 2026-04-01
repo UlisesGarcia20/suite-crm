@@ -35,6 +35,11 @@ RUN a2enmod rewrite headers expires && \
 
 COPY --chown=www-data:www-data . /var/www/html/
 
+# Install Composer and PHP dependencies
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+    cd /var/www/html && \
+    composer install --no-dev --optimize-autoloader 2>&1 | head -50
+
 RUN mkdir -p \
     /var/www/html/cache \
     /var/www/html/logs \
