@@ -57,6 +57,11 @@ RUN mkdir -p \
     && chgrp -R 0 /var/www/html /var/log/apache2 /var/run/apache2 /etc/apache2 \
     && chmod -R g=u /var/www/html /var/log/apache2 /var/run/apache2 /etc/apache2
 
+# Create config.php for legacy SuiteCRM
+RUN printf "<?php\n\$sugar_config = array(\n    'db_host_name' => 'mariadb',\n    'db_name' => 'suitecrm',\n    'db_user' => 'farodevops',\n    'db_password' => '4dm1nf4ro159',\n    'db_port' => '3306',\n    'db_type' => 'mysql',\n);\n" > /var/www/html/public/legacy/config.php && \
+    chown www-data:www-data /var/www/html/public/legacy/config.php && \
+    chmod 644 /var/www/html/public/legacy/config.php
+
 # Create .env file with basic configuration
 RUN printf 'APP_ENV=production\nAPP_DEBUG=0\nAPP_SECRET=SuiteCRMSecretKey2026\nDATABASE_URL=mysql://farodevops:4dm1nf4ro159@mariadb:3306/suitecrm?serverVersion=11.0&charset=utf8mb4\nMAILER_DSN=null://null\nTZ=America/Mexico_City\n' > /var/www/html/.env && \
     chown www-data:www-data /var/www/html/.env && \
